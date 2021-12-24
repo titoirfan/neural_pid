@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from plants.motor_position import MotorPosition
-from plants.evaluator import *
+from utils.evaluator import *
 from controllers.pidnn import PIDNN
 from controllers.pid import PID
 
