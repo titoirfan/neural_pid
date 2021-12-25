@@ -13,10 +13,17 @@ from controllers.pidnn import PIDNN
 from controllers.pid import PID
 
 # Simulation parameters
-t_end = 10
+t_end = 20
 d_t = 0.01
 T = np.arange(0.0, t_end, d_t)
-r = 1.0
+it = np.nditer(T, flags=['f_index'])
+r = np.full_like(T, 1.0)
+
+num_changes = 2
+interval = int(len(T) / num_changes)
+
+for i in range(num_changes):
+    r[i * interval:(i + 1) * interval] = i + 1
 
 # Motor position model
 plant = MotorPosition(
@@ -29,8 +36,8 @@ constants = [22.34, 7.579, 1.956]
 # PIDNN Controller
 pidnn = PIDNN(
     initial_constants = constants,
-    learning_rate = 8e-1, 
-    max_weight_change = 10000, 
+    learning_rate = 1, 
+    max_weight_change = 100, 
     tolerance = 1e-8,
     timestep = d_t)
 
@@ -44,20 +51,21 @@ y_pid = [0.0]
 
 # Adaptive
 plant.reset_states()
-for i in T:
-    u = pidnn.predict(reference = r, feedback = y_pidnn[-1])
+it.reset()
+for i in it:
+    u = pidnn.predict(reference = r[it.index], feedback = y_pidnn[-1])
     y_pidnn.append(plant.simulate_one_step(u, i))
 
 # Non-adaptive
 plant.reset_states()
-for i in T:
-    u = pid.predict(reference = r, feedback = y_pid[-1])
+it.reset()
+for i in it:
+    u = pid.predict(reference = r[it.index], feedback = y_pid[-1])
     y_pid.append(plant.simulate_one_step(u, i))
 
 # Tweak lengths to match the time series
 y_pidnn = y_pidnn[1:]
 y_pid = y_pid[1:]
-r = np.ones(int(t_end / d_t))
 
 # Performance metrics
 settling_time_pidnn = calc_settling_time(y_pidnn, T)
