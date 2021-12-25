@@ -27,7 +27,7 @@ class MotorPosition:
         self._U = np.array([0.0])
         self._T = np.array([0.0])
 
-    def simulate_one_step(self, U_input, T_input) -> float:
+    def simulate_one_step(self, U_input: float, T_input: float) -> float:
         self._T = np.array([self._T[-1], T_input])
         self._U = np.array([self._U[-1], U_input])
         y, _, x = control.matlab.lsim(self._G, self._U, self._T, X0 = self._X)
