@@ -1,7 +1,16 @@
+"""
+    This file contains the motor position plant model implementation.
+"""
+
+__author__ = "irfantitok@gmail.com"
+
 import numpy as np
 import control.matlab
 
 class MotorPosition:
+    """
+        Motor position plant model
+    """
     def __init__(self, K: float, tau: float):
         # System characteristics
         self._K = K

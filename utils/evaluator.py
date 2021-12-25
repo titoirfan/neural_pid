@@ -1,3 +1,7 @@
+"""
+    This file contains utility functions to evaluate system responses.
+"""
+
 import numpy as np
 
 def calc_settling_time(

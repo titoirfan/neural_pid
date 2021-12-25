@@ -1,8 +1,14 @@
+"""
+    This file contains the classic PID controller implementation.
+"""
+
+__author__ = "irfantitok@gmail.com"
+
 import numpy as np
 
 class PID(object):
     """
-    Classic PID Controller
+        Classic PID Controller
     """
     def __init__(
         self,

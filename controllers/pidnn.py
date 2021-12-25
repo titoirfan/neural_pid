@@ -1,10 +1,17 @@
+"""
+    This file contains the adaptive PID neural network
+    controller implementation.
+"""
+
+__author__ = "irfantitok@gmail.com"
+
 import math
 import numpy as np
 from typing import Any
 
 class PIDNN(object):
     """
-    Adaptive PID Neural Network Controller
+        Adaptive PID Neural Network Controller
     """
     def __init__(
         self,
@@ -125,12 +132,12 @@ class PIDNN(object):
 
         return self.v[0]
 
-    def learn(self, feedback) -> None:
+    def learn(self, feedback: float) -> None:
         # Backprop
         delta_r = self.r[0] - self.y[0]
         delta_y = feedback - self.y[0]
 
-        delta_hidden_weights, delta_output_weights = self.backprop(delta_r, delta_y)
+        delta_output_weights = self.backprop(delta_r, delta_y)
 
         # Update weights when error is larger than the tolerance
         if delta_r >= self.tol:
@@ -142,33 +149,9 @@ class PIDNN(object):
                         delta_output_weights[idx] = -self.weight_chg_tol
                 
                 self.output_weights[idx] = self.output_weights[idx] - self.eta * delta_output_weights[idx]
-                self.output_weights[idx] = min(max(self.output_weights[idx], 0.0), 1.0)
-
-            # for row in range(delta_hidden_weights.shape[0]):
-            #     for col in range(delta_hidden_weights.shape[1]):
-            #         if math.fabs(delta_hidden_weights[row][col]) > self.weight_chg_tol:
-            #             if delta_hidden_weights[row][col] > 0:
-            #                 delta_hidden_weights[row][col] = self.weight_chg_tol
-            #             elif delta_hidden_weights[row][col] < 0:
-            #                 delta_hidden_weights[row][col] = -self.weight_chg_tol
-                    
-            #         self.hidden_weights[row][col] = self.hidden_weights[row][col] - self.eta * delta_hidden_weights[row][col]
-            #         self.hidden_weights[row][col] = min(max(self.hidden_weights[row][col], 0.0), 1.0)
 
     def backprop(self, delta_r: float, delta_y: float) -> Any:
         delta_v = self.threshold_div_by_zero(self.v[0] - self.v[1])
-        delta_input_p = self.threshold_div_by_zero(
-            self.hidden_input_p[0] - self.hidden_input_p[1]
-        )
-        delta_input_i = self.threshold_div_by_zero(
-            self.hidden_input_i[0] - self.hidden_input_i[1]
-        )
-        delta_input_d = self.threshold_div_by_zero(
-            self.hidden_input_d[0] - self.hidden_input_d[1]
-        )
-        delta_output_p = self.hidden_output_p[0] - self.hidden_output_p[1]
-        delta_output_i = self.hidden_output_i[0] - self.hidden_output_i[1]
-        delta_output_d = self.hidden_output_d[0] - self.hidden_output_d[1]
 
         # Output layer weight changes
         delta_output_weights = np.zeros([3], dtype=float)
@@ -179,25 +162,4 @@ class PIDNN(object):
         delta_output_weights[2] = (
             -2 * delta_r * delta_y * self.hidden_output_d[0] / delta_v)
 
-        # Hidden layer weight changes
-        delta_hidden_weights = np.zeros([2, 3], dtype=float)
-        delta_hidden_weights[0][0] = (
-            -2 * delta_r * delta_y * delta_output_p * self.output_weights[0]
-            * self.input_y[0] / (delta_v * delta_input_p))
-        delta_hidden_weights[0][1] = (
-            -2 * delta_r * delta_y * delta_output_i * self.output_weights[1]
-            * self.input_y[0] / (delta_v * delta_input_i))
-        delta_hidden_weights[0][2] = (
-            -2 * delta_r * delta_y * delta_output_d * self.output_weights[2]
-            * self.input_y[0] / (delta_v * delta_input_d))
-        delta_hidden_weights[1][0] = (
-            -2 * delta_r * delta_y * delta_output_p * self.output_weights[0]
-            * self.input_r[0] / (delta_v * delta_input_p))
-        delta_hidden_weights[1][1] = (
-            -2 * delta_r * delta_y * delta_output_i * self.output_weights[1]
-            * self.input_r[0] / (delta_v * delta_input_i))
-        delta_hidden_weights[1][2] = (
-            -2 * delta_r * delta_y * delta_output_d * self.output_weights[2]
-            * self.input_r[0] / (delta_v * delta_input_d))
-
-        return (delta_hidden_weights, delta_output_weights)
+        return delta_output_weights
