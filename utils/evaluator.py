@@ -2,6 +2,8 @@
     This file contains utility functions to evaluate system responses.
 """
 
+__author__ = "irfantitok@gmail.com"
+
 import numpy as np
 
 def calc_settling_time(
