@@ -7,10 +7,10 @@ __author__ = "irfantitok@gmail.com"
 import numpy as np
 import matplotlib.pyplot as plt
 
-from neural_pid.plants.motor_position import MotorPosition
-from neural_pid.utils.evaluator import *
-from neural_pid.controllers.pidnn import PIDNN
-from neural_pid.controllers.pid import PID
+from plants.motor_position import MotorPosition
+from utils.evaluator import *
+from controllers.pidnn import PIDNN
+from controllers.pid import PID
 
 # Simulation parameters
 t_end = 20
