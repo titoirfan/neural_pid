@@ -12,7 +12,7 @@ class PID(object):
     """
     def __init__(
         self,
-        constants: tuple[float, float, float],
+        constants: tuple,
         timestep: float) -> None:
         # Timestep
         self.timestep = timestep

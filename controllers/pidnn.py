@@ -15,7 +15,7 @@ class PIDNN(object):
     """
     def __init__(
         self,
-        initial_constants: tuple[float, float, float],
+        initial_constants: tuple,
         learning_rate: float,
         max_weight_change: float,
         tolerance: float,
